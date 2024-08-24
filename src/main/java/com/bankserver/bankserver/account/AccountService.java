@@ -18,10 +18,8 @@ public class AccountService {
     }
 
     public Account newAccount (User owner, String displayName) {
-        Account account = new Account(owner);
-        account.setDisplayName(displayName);
-        return account;
+        Account account = new Account(owner, displayName);
+
+        return accountRepository.save(account);
     }
-
-
 }

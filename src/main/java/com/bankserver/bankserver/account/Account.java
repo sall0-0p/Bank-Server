@@ -21,8 +21,11 @@ public class Account {
         this.owner = owner;
     }
 
+    public Account(User owner, String displayName) {
+        this.displayName = displayName;
+    }
+
     @Id
-    @Size(min = 6, max = 6)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

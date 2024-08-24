@@ -1,6 +1,7 @@
 package com.bankserver.bankserver.user;
 
 import com.bankserver.bankserver.account.Account;
+import com.bankserver.bankserver.utils.server.Server;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -13,27 +14,29 @@ import java.util.*;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
+@Table(name = "users")
 public class User {
 
     public User() {}
 
-    public User(UUID uuid, String username) {
-        this.ownerUUID = uuid;
+    public User(UUID minecraftUUID, String username, UUID worldUUID) {
+        this.minecraftUUID = minecraftUUID;
         this.username = username;
+        this.worldUUID = worldUUID;
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     @NotNull(message = "OwnerUIID cannot be null")
-    private UUID ownerUUID;
+    private UUID minecraftUUID;
 
-    // TODO: Reenable this one after some development, I need to identify servers for it!!!
-//    @Column(nullable = false)
-//    private UUID server;
+    @Column(nullable = false)
+    @NotNull(message = "Server user belongs must be defined!")
+    @JsonIgnore
+    private UUID worldUUID;
 
     @Column(nullable = false)
     @NotNull(message = "Username has to be defined")
@@ -45,7 +48,7 @@ public class User {
     @Column(nullable = false)
     private int accountLimit;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Account personalAccount;
 
     @CreationTimestamp
@@ -58,12 +61,12 @@ public class User {
     @Column(nullable = false)
     private Date updatedAt;
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public UUID getOwnerUUID() {
-        return ownerUUID;
+    public UUID getMinecraftUUID() {
+        return minecraftUUID;
     }
 
     public String getUsername() {
@@ -100,5 +103,9 @@ public class User {
 
     public void setPersonalAccount(Account personalAccount) {
         this.personalAccount = personalAccount;
+    }
+
+    public @NotNull(message = "Server user belongs must be defined!") UUID getWorldUUID() {
+        return worldUUID;
     }
 }
