@@ -14,12 +14,34 @@ public class AccountService {
     }
 
     public Account newAccount(User owner) {
-        return new Account(owner);
+        return new Account(generateAccountId(), owner);
     }
 
     public Account newAccount (User owner, String displayName) {
-        Account account = new Account(owner, displayName);
+        Account account = new Account(generateAccountId(), owner, displayName);
 
         return accountRepository.save(account);
+    }
+
+    // misc methods
+
+    private String generateAccountId() {
+        String result = generateEightDigits();
+
+        if (accountRepository.existsById(result)) {
+            return generateAccountId();
+        } else {
+            return result;
+        }
+    }
+
+    private String generateEightDigits() {
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < 8; i++) {
+            result.append(Math.round(Math.random() * 9));
+        }
+
+        return result.toString();
     }
 }

@@ -1,8 +1,9 @@
 package com.bankserver.bankserver.utils.server;
 
+import com.bankserver.bankserver.utils.HASHGenerator;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @Entity
@@ -14,20 +15,24 @@ public class Server {
     private UUID worldUUID;
 
     @Column(nullable = false, updatable = false)
-    private UUID apiKey;
+    private String apiKey;
 
     public Server() {}
 
     public Server(UUID worldUUID) {
         this.worldUUID = worldUUID;
-        this.apiKey = UUID.randomUUID();
+        try {
+            this.apiKey = HASHGenerator.createSHAHash(UUID.randomUUID().toString());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     public UUID getWorldUUID() {
         return worldUUID;
     }
 
-    public UUID getApiKey() {
+    public String getApiKey() {
         return apiKey;
     }
 }

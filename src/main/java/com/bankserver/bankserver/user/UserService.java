@@ -22,7 +22,7 @@ public class UserService {
     public User createUser(String username, Server server) {
         User user = new User(UUID.randomUUID(), username, server.getWorldUUID());
         user = userRepository.save(user);
-        user.setPersonalAccount(accountService.newAccount(user, user.getUsername()));
+        user.setPersonalAccountId(accountService.newAccount(user, user.getUsername()).getId());
 
         return user;
     }

@@ -7,28 +7,35 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Entity
+@Component
 @Table(name="accounts", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
-    public Account() {}
+    public Account() {
+    }
 
-    public Account(User owner) {
+    public Account(String accountId, User owner) {
+        this.id = accountId;
         this.owner = owner;
     }
 
-    public Account(User owner, String displayName) {
+    public Account(String accountId, User owner, String displayName) {
+        this.id = accountId;
+        this.owner = owner;
         this.displayName = displayName;
     }
 
     @Id
-    private long id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     private User owner;
 
@@ -62,7 +69,7 @@ public class Account {
 
     // getters
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -127,7 +134,4 @@ public class Account {
     public void setCreditPercent(float creditPercent) {
         this.creditPercent = creditPercent;
     }
-
-    // misc methods
-
 }

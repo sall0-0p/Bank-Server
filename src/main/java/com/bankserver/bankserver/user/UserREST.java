@@ -1,5 +1,6 @@
 package com.bankserver.bankserver.user;
 
+import com.bankserver.bankserver.account.Account;
 import com.bankserver.bankserver.utils.server.Server;
 import com.bankserver.bankserver.utils.server.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api")
 public class UserREST {
+    private final boolean DEBUG_IGNORE_API_KEYS = true;
+
     private final UserRepository userRepository;
     private final UserService userService;
     private final ServerRepository serverRepository;
@@ -32,7 +35,7 @@ public class UserREST {
         }
 
         Server server = serverRepository.findById(user.getWorldUUID()).orElse(null);
-        if (server == null || !server.getApiKey().toString().equals(apiKey)) {
+        if (server == null || !server.getApiKey().equals(apiKey)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
         }
 
@@ -43,7 +46,7 @@ public class UserREST {
     @PostMapping("/user/{username}")
     public ResponseEntity<?> addUser(@RequestHeader("X-API-KEY") String apiKey, @PathVariable String username) {
 
-        Server server = serverRepository.findByApiKey(UUID.fromString(apiKey));
+        Server server = serverRepository.findByApiKey(apiKey);
         if (server == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
         }

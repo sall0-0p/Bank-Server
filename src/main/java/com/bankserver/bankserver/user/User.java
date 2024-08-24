@@ -48,8 +48,9 @@ public class User {
     @Column(nullable = false)
     private int accountLimit;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Account personalAccount;
+    // TODO: Make this relational!
+    @Column
+    private String personalAccountId;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -89,8 +90,8 @@ public class User {
         this.accountLimit = accountLimit;
     }
 
-    public Account getPersonalAccount() {
-        return personalAccount;
+    public String getPersonalAccountId() {
+        return personalAccountId;
     }
 
     public Date getCreatedAt() {
@@ -101,8 +102,8 @@ public class User {
         return updatedAt;
     }
 
-    public void setPersonalAccount(Account personalAccount) {
-        this.personalAccount = personalAccount;
+    public void setPersonalAccountId(String personalAccountId) {
+        this.personalAccountId = personalAccountId;
     }
 
     public @NotNull(message = "Server user belongs must be defined!") UUID getWorldUUID() {
