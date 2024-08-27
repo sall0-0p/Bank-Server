@@ -1,13 +1,9 @@
 package com.bankserver.bankserver.account;
 
 import com.bankserver.bankserver.user.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -15,7 +11,6 @@ import java.util.Date;
 @Entity
 @Component
 @Table(name="accounts", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
-// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account {
 
     public Account() {
@@ -24,6 +19,7 @@ public class Account {
     public Account(String accountId, User owner) {
         this.id = accountId;
         this.owner = owner;
+        this.displayName = owner.getUsername();
     }
 
     public Account(String accountId, User owner, String displayName) {

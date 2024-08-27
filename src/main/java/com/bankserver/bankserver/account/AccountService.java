@@ -1,6 +1,7 @@
 package com.bankserver.bankserver.account;
 
 import com.bankserver.bankserver.user.User;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,14 +14,25 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
+    @Transactional
     public Account newAccount(User owner) {
-        return new Account(generateAccountId(), owner);
+        return accountRepository.save(new Account(generateAccountId(), owner));
     }
 
+    @Transactional
     public Account newAccount (User owner, String displayName) {
-        Account account = new Account(generateAccountId(), owner, displayName);
+        Account account = new Account(generateAccountId(), owner);
+        account.setDisplayName(displayName);
 
         return accountRepository.save(account);
+    }
+
+    @Transactional
+    public void deleteAccount (Account account) {
+        account.setDeleted(true);
+        // other logic here
+
+        accountRepository.save(account);
     }
 
     // misc methods
