@@ -49,7 +49,6 @@ public class User {
     @Column(nullable = false)
     private int accountLimit;
 
-
     // TODO: Make this relational to Account instead of ID.
     @Column
     private String personalAccountId;
