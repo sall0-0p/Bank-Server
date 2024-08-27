@@ -1,6 +1,7 @@
 package com.bankserver.bankserver.utils.server;
 
 import com.bankserver.bankserver.utils.HASHGenerator;
+import com.bankserver.bankserver.utils.server.config.Config;
 import jakarta.persistence.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -16,6 +17,9 @@ public class Server {
 
     @Column(nullable = false, updatable = false)
     private String apiKey;
+
+    @Embedded
+    private Config config;
 
     public Server() {}
 

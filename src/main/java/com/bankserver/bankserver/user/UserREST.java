@@ -8,12 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
 public class UserREST {
-    private final boolean DEBUG_IGNORE_API_KEYS = true;
 
     private final UserRepository userRepository;
     private final UserService userService;
@@ -43,6 +43,7 @@ public class UserREST {
     }
 
     // Creates user from username
+    // TODO: Refactor to UUID & username instead of plain username!
     @PostMapping("/user/{username}")
     public ResponseEntity<?> addUser(@RequestHeader("X-API-KEY") String apiKey, @PathVariable String username) {
 
@@ -52,5 +53,60 @@ public class UserREST {
         }
 
         return ResponseEntity.ok(userService.createUser(username, server));
+    }
+
+    @PatchMapping("/user/{id}")
+    public ResponseEntity<?> updateUser(@RequestHeader("X-API-KEY") String apiKey, @PathVariable String id, @RequestBody Map<String, Object> updates) {
+        User user = userRepository.findById(UUID.fromString(id)).orElse(null);
+        if (user == null) {
+            return null;
+        }
+
+        Server server = serverRepository.findById(user.getWorldUUID()).orElse(null);
+        if (server == null || !server.getApiKey().equals(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+        }
+
+        if (user.isDeleted()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is deleted");
+        }
+
+        for (String key : updates.keySet()) {
+            if (!key.equals("suspended") && user.isSuspended()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is suspended");
+            }
+
+            switch (key) {
+                case "suspended":
+                    user.setSuspended(Boolean.parseBoolean(updates.get(key).toString()));
+                    break;
+                case "accountLimit":
+                    user.setAccountLimit(Integer.parseInt(updates.get(key).toString()));
+                    break;
+                default:
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(String.format("There is no property '%s'", key));
+            }
+        }
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<?> deleteUser(@RequestHeader("X-API-KEY") String apiKey, @PathVariable String id) {
+        User user = userRepository.findById(UUID.fromString(id)).orElse(null);
+        if (user == null) {
+            return null;
+        }
+
+        Server server = serverRepository.findById(user.getWorldUUID()).orElse(null);
+        if (server == null || !server.getApiKey().equals(apiKey)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+        }
+
+        userService.deleteUser(user);
+
+        return ResponseEntity.ok("Successfully deleted");
     }
 }

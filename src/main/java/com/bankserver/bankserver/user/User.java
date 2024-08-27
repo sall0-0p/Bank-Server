@@ -1,7 +1,5 @@
 package com.bankserver.bankserver.user;
 
-import com.bankserver.bankserver.account.Account;
-import com.bankserver.bankserver.utils.server.Server;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -29,16 +27,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @NotNull(message = "OwnerUIID cannot be null")
     private UUID minecraftUUID;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @NotNull(message = "Server user belongs must be defined!")
     @JsonIgnore
     private UUID worldUUID;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @NotNull(message = "Username has to be defined")
     private String username;
 
@@ -46,9 +44,13 @@ public class User {
     private boolean suspended;
 
     @Column(nullable = false)
+    private boolean deleted;
+
+    @Column(nullable = false)
     private int accountLimit;
 
-    // TODO: Make this relational!
+
+    // TODO: Make this relational to Account instead of ID.
     @Column
     private String personalAccountId;
 
@@ -108,5 +110,13 @@ public class User {
 
     public @NotNull(message = "Server user belongs must be defined!") UUID getWorldUUID() {
         return worldUUID;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

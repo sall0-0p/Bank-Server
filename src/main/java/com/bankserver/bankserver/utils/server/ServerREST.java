@@ -1,6 +1,7 @@
 package com.bankserver.bankserver.utils.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class ServerREST {
     }
 
     @PostMapping("/api/server/{worldId}")
-    private Server registerServer(@PathVariable String worldId) {
-        return serverRepository.save(serverService.registerServer(UUID.fromString(worldId)));
+    private ResponseEntity<Server> registerServer(@PathVariable String worldId) {
+        return ResponseEntity.ok(serverRepository.save(serverService.registerServer(UUID.fromString(worldId))));
     }
 }
