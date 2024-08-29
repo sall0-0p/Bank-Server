@@ -1,6 +1,5 @@
 package com.bankserver.bankserver.user;
 
-import com.bankserver.bankserver.account.Account;
 import com.bankserver.bankserver.account.AccountRepository;
 import com.bankserver.bankserver.utils.server.Server;
 import com.bankserver.bankserver.utils.server.ServerRepository;
@@ -40,7 +39,7 @@ public class UserREST {
 
         Server server = serverRepository.findById(user.getWorldUUID()).orElse(null);
         if (server == null || !server.getApiKey().equals(apiKey)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         return ResponseEntity.ok(user);
@@ -57,7 +56,7 @@ public class UserREST {
 
         Server server = serverRepository.findById(user.getWorldUUID()).orElse(null);
         if (server == null || !server.getApiKey().equals(apiKey)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         return ResponseEntity.ok(accountRepository.findAccountsByOwnerAndDeletedIsFalse(user));
@@ -71,7 +70,7 @@ public class UserREST {
 
         Server server = serverRepository.findByApiKey(apiKey);
         if (server == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         return ResponseEntity.ok(userService.createUser(username, server));
@@ -88,7 +87,7 @@ public class UserREST {
 
         Server server = serverRepository.findById(user.getWorldUUID()).orElse(null);
         if (server == null || !server.getApiKey().equals(apiKey)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         if (user.isDeleted()) {
@@ -108,13 +107,13 @@ public class UserREST {
                     user.setAccountLimit(Integer.parseInt(updates.get(key).toString()));
                     break;
                 default:
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(String.format("There is no property '%s'", key));
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("There is no property '%s'", key));
             }
         }
 
         userRepository.save(user);
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     // DELETE

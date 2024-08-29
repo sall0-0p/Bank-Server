@@ -59,7 +59,7 @@ public class AccountREST {
 
         Server server = serverRepository.findById(user.getWorldUUID()).orElse(null);
         if (server == null || !server.getApiKey().equals(apiKey)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         if (accountRepository.findAccountsByOwner(user).size() >= user.getAccountLimit()) {
@@ -73,7 +73,7 @@ public class AccountREST {
             newAccount = accountRepository.save(newAccount);
         }
 
-        return ResponseEntity.ok(newAccount);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAccount);
     }
 
     // PATCH
@@ -89,7 +89,7 @@ public class AccountREST {
 
         Server server = serverRepository.findById(owner.getWorldUUID()).orElse(null);
         if (server == null || !server.getApiKey().equals(apiKey)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         for (String key : data.keySet()) {
@@ -110,7 +110,7 @@ public class AccountREST {
                     account.setCreditPercent(Float.parseFloat(data.get(key).toString()));
                     break;
                 default:
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(String.format("There is no property '%s'", key));
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(String.format("There is no property '%s'", key));
             }
         }
 
@@ -130,7 +130,7 @@ public class AccountREST {
 
         Server server = serverRepository.findById(owner.getWorldUUID()).orElse(null);
         if (server == null || !server.getApiKey().equals(apiKey)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         accountService.deleteAccount(account);
