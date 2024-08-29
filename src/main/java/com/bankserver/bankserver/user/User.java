@@ -46,8 +46,9 @@ public class User {
     @Column(nullable = false)
     private boolean deleted;
 
+    // TODO: Change this from fixed value of 3 to Config entry!
     @Column(nullable = false)
-    private int accountLimit;
+    private int accountLimit = 3;
 
     // TODO: Make this relational to Account instead of ID.
     @Column

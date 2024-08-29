@@ -27,7 +27,7 @@ public class TransactionREST {
         this.accountRepository = accountRepository;
     }
 
-    @GetMapping("/api/transaction/{id}")
+    @GetMapping("/transaction/{id}")
     public ResponseEntity<?> getTransaction(@RequestHeader("X-API-KEY") String apiKey, @PathVariable("id") String id) {
         // API Auth
         Transaction transaction = transactionRepository.findById(UUID.fromString(id)).orElse(null);
@@ -53,7 +53,7 @@ public class TransactionREST {
     // destinationAccountId (string) - id of an account to receive to
     // amount (float) - amount to send
     // description (string, optional) - description for it
-    @PostMapping("/api/transaction")
+    @PostMapping("/transaction")
     public ResponseEntity<?> createTransaction(@RequestHeader("X-API-KEY") String apiKey, @RequestBody Map<String, Object> data) {
         if (!data.containsKey("sourceAccountId")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Source account id must be provided");

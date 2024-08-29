@@ -73,7 +73,7 @@ public class UserREST {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
-        return ResponseEntity.ok(userService.createUser(username, server));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(username, server));
     }
 
     // PATCH
@@ -113,7 +113,7 @@ public class UserREST {
 
         userRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        return ResponseEntity.status(200).body(user);
     }
 
     // DELETE

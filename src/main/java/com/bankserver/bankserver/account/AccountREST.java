@@ -114,7 +114,7 @@ public class AccountREST {
             }
         }
 
-        return ResponseEntity.ok(accountRepository.save(account));
+        return ResponseEntity.status(200).body(accountRepository.save(account));
     }
 
     // DELETE
