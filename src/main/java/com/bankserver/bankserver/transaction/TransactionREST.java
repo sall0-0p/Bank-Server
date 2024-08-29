@@ -75,6 +75,11 @@ public class TransactionREST {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid source account or destination account");
         }
 
+        Server server = serverRepository.findById(sourceAccount.getOwner().getWorldUUID()).orElse(null);
+        if (server == null || !server.getApiKey().equals(apiKey)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
+        }
+
         Transaction transaction;
         if (data.containsKey("description")) {
             try {

@@ -66,6 +66,10 @@ public class TransactionService {
             throw new Exception("Suspended or deleted accounts are not allowed in transactions!");
         }
 
+        if (!sourceAccount.getOwner().getWorldUUID().equals(destinationAccount.getOwner().getWorldUUID())) {
+            throw new Exception("Source and destination accounts have to belong to the same server!");
+        }
+
         if (amount < 0) {
             throw new Exception("Amount must be greater than zero!");
         }

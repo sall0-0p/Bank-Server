@@ -39,8 +39,8 @@ public class AccountREST {
         User owner = account.getOwner();
 
         Server server = serverRepository.findById(owner.getWorldUUID()).orElse(null);
-        if (server == null || !server.getApiKey().toString().equals(apiKey)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid API Key");
+        if (server == null || !server.getApiKey().equals(apiKey)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
         }
 
         return ResponseEntity.ok(account);

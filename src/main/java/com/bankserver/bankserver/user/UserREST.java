@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api")
 public class UserREST {
+    private final Pattern UUID_REGEX = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
     private final UserRepository userRepository;
     private final UserService userService;
@@ -29,10 +31,18 @@ public class UserREST {
     }
 
     // GET
-    // Gets data about user from id
+    // Gets data about user from id or username
     @GetMapping("/user/{id}")
     private ResponseEntity<?> getUserById(@RequestHeader("X-API-KEY") String apiKey, @PathVariable String id) {
-        User user = userRepository.findById(UUID.fromString(id)).orElse(null);
+        boolean isUUID = UUID_REGEX.matcher(id).matches();
+        User user;
+
+        if (isUUID) {
+            user = userRepository.findById(UUID.fromString(id)).orElse(null);
+        } else {
+            user = userRepository.findByUsername(id).orElse(null);
+        }
+
         if (user == null) {
             return null;
         }
@@ -67,10 +77,13 @@ public class UserREST {
     // TODO: Refactor to UUID & username instead of plain username!
     @PostMapping("/user/{username}")
     public ResponseEntity<?> addUser(@RequestHeader("X-API-KEY") String apiKey, @PathVariable String username) {
-
         Server server = serverRepository.findByApiKey(apiKey);
         if (server == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API Key");
+        }
+
+        if (userRepository.findByUsername(username).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(username, server));
